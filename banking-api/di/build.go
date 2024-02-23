@@ -6,8 +6,10 @@ import (
 	"github.com/plutus/banking-api/config"
 	"github.com/plutus/banking-api/pkg/env"
 	"github.com/plutus/banking-api/pkg/logger"
+	"github.com/plutus/banking-api/pkg/pg"
 	"github.com/plutus/banking-api/rest"
 	"go.uber.org/dig"
+	"gorm.io/gorm"
 )
 
 func buildConfig(c *dig.Container) error {
@@ -21,8 +23,22 @@ func buildConfig(c *dig.Container) error {
 		return err
 	}
 
+	if err := c.Provide(config.NewPostgresSettings); err != nil {
+		return err
+	}
+
 	if err := c.Provide(func(s logger.Settings) (logger.Logger, error) {
 		return logger.New(s), nil
+	}); err != nil {
+		return err
+	}
+
+	if err := c.Provide(pg.NewPostgres); err != nil {
+		return err
+	}
+
+	if err := c.Provide(func(postgres *pg.Postgres) (*gorm.DB, error) {
+		return pg.NewGorm(postgres.DB())
 	}); err != nil {
 		return err
 	}

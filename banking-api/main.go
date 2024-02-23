@@ -7,9 +7,11 @@ import (
 
 	"github.com/plutus/banking-api/config"
 	"github.com/plutus/banking-api/di"
+	models "github.com/plutus/banking-api/repositories/model"
 	"github.com/plutus/banking-api/rest"
 	"github.com/rs/cors"
 	"golang.org/x/sync/errgroup"
+	"gorm.io/gorm"
 )
 
 func main() {
@@ -18,7 +20,17 @@ func main() {
 		panic(err)
 	}
 
-	// TODO call migrations and seeds
+	if err := c.Invoke(func(g *gorm.DB) error {
+		return g.AutoMigrate(
+			&models.User{},
+			&models.Account{},
+			&models.Transaction{},
+			&models.Currency{},
+		)
+	}); err != nil {
+		panic(err)
+	}
+
 	if err := c.Invoke(rest.NewRest); err != nil {
 		panic(err)
 	}
