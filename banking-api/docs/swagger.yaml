@@ -1,0 +1,21 @@
+host: locahost:3000
+info:
+  contact: {}
+  description: This is a API representing a simple banking system.
+  title: Plutus Banking API
+  version: "1.0"
+paths:
+  /healthz:
+    get:
+      description: Check servivce health condition
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Check service health
+      tags:
+      - health
+swagger: "2.0"
