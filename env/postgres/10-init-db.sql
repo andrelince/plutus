@@ -1,0 +1,4 @@
+CREATE USER plutus WITH PASSWORD 'banking_api';
+CREATE DATABASE banking_api OWNER plutus;
+GRANT ALL PRIVILEGES ON DATABASE banking_api TO plutus;
+REVOKE ALL ON DATABASE banking_api FROM PUBLIC;
