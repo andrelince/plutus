@@ -3,6 +3,7 @@ module github.com/plutus/banking-api
 go 1.22.0
 
 require (
+	github.com/jackc/pgx/v5 v5.4.3
 	github.com/sirupsen/logrus v1.9.3
 	github.com/swaggo/swag v1.8.1
 )
@@ -15,7 +16,6 @@ require (
 	github.com/go-openapi/swag v0.19.15 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
-	github.com/jackc/pgx/v5 v5.4.3 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
@@ -33,7 +33,6 @@ require (
 require (
 	github.com/caarlos0/env/v6 v6.10.1
 	github.com/joho/godotenv v1.5.1
-	github.com/lib/pq v1.10.9
 	github.com/rs/cors v1.10.1
 	github.com/swaggo/http-swagger v1.3.4
 	go.uber.org/dig v1.17.1

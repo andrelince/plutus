@@ -3,7 +3,7 @@ package pg
 import (
 	"database/sql"
 
-	_ "github.com/lib/pq"
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 type Postgres struct {
@@ -17,7 +17,7 @@ type PostgresSettings struct {
 }
 
 func NewPostgres(config PostgresSettings) (*Postgres, error) {
-	db, err := sql.Open("postgres", config.DataSource)
+	db, err := sql.Open("pgx", config.DataSource)
 	if err != nil {
 		return nil, err
 	}
