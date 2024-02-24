@@ -57,6 +57,18 @@ func buildConfig(c *dig.Container) error {
 		return err
 	}
 
+	if err := c.Provide(func(g *gorm.DB) repositories.AccountConnector {
+		return repositories.NewAccountRepo(g)
+	}); err != nil {
+		return err
+	}
+
+	if err := c.Provide(func(r repositories.AccountConnector) services.AccountConnector {
+		return services.NewAccountService(r)
+	}); err != nil {
+		return err
+	}
+
 	if err := c.Provide(http.NewServeMux); err != nil {
 		return err
 	}

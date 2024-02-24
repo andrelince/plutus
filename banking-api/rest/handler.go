@@ -15,15 +15,18 @@ import (
 )
 
 type Handler struct {
-	userConn  services.UserConnector
-	validator *validator.Validate
+	userConn    services.UserConnector
+	accountConn services.AccountConnector
+	validator   *validator.Validate
 }
 
 func NewHandler(
 	userConn services.UserConnector,
+	accountConn services.AccountConnector,
 ) Handler {
 	return Handler{
-		userConn: userConn,
+		userConn:    userConn,
+		accountConn: accountConn,
 		validator: validator.New(
 			validator.WithRequiredStructEnabled(),
 		),
@@ -32,12 +35,12 @@ func NewHandler(
 
 // Healthz godoc
 //
-//  @Summary      Check service health
-//  @Description  Check service health condition
-//  @Tags         health
-//  @Produce      plain
-//  @Success      200  {string}  string  "OK"
-//  @Router       /healthz [get]
+//	@Summary      Check service health
+//	@Description  Check service health condition
+//	@Tags         health
+//	@Produce      plain
+//	@Success      200  {string}  string  "OK"
+//	@Router       /healthz [get]
 func (h Handler) Health(writer http.ResponseWriter, request *http.Request) {
 	if _, err := writer.Write([]byte(`OK`)); err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
@@ -241,6 +244,44 @@ func (h Handler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	jsonOut, err := json.Marshal(
 		slice.FromManyToMany(out, transformer.FromUserEntityToDef),
 	)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if _, err := w.Write(jsonOut); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+}
+
+// CreateAccount godoc
+//
+// @Summary      Create a user account
+// @Description  Create a user account
+// @Tags         user
+// @Produce      json
+// @Success      200  {object}  definitions.Account
+// @Router       /user/{id}/account [post]
+//
+// @Param        id    query  string                 true  "id of user for whom to create the account"
+func (h Handler) CreateAccount(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil || id <= 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		WriteError(w, errors.New("user id is invalid"))
+		return
+	}
+
+	out, err := h.accountConn.CreateAccount(r.Context(), uint(id))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		WriteError(w, err)
+		return
+	}
+
+	jsonOut, err := json.Marshal(transformer.FromAccountEntityToDef(out))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
