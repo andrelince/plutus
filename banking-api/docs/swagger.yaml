@@ -1,3 +1,26 @@
+definitions:
+  definitions.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  definitions.UserInput:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
 host: locahost:3000
 info:
   contact: {}
@@ -7,7 +30,7 @@ info:
 paths:
   /healthz:
     get:
-      description: Check servivce health condition
+      description: Check service health condition
       produces:
       - text/plain
       responses:
@@ -18,4 +41,24 @@ paths:
       summary: Check service health
       tags:
       - health
+  /user:
+    post:
+      description: Create a user in the system
+      parameters:
+      - description: user to create
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/definitions.UserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/definitions.User'
+      summary: Create a user
+      tags:
+      - user
 swagger: "2.0"

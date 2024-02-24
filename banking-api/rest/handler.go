@@ -1,17 +1,37 @@
 package rest
 
-import "net/http"
+import (
+	"encoding/json"
+	"errors"
+	"io"
+	"net/http"
 
-type Handler struct{}
+	"github.com/go-playground/validator/v10"
+	"github.com/plutus/banking-api/rest/definitions"
+	"github.com/plutus/banking-api/rest/transformer"
+	"github.com/plutus/banking-api/services"
+)
 
-func NewHandler() Handler {
-	return Handler{}
+type Handler struct {
+	userConn  services.UserConnector
+	validator *validator.Validate
+}
+
+func NewHandler(
+	userConn services.UserConnector,
+) Handler {
+	return Handler{
+		userConn: userConn,
+		validator: validator.New(
+			validator.WithRequiredStructEnabled(),
+		),
+	}
 }
 
 // Healthz godoc
 //
 //  @Summary      Check service health
-//  @Description  Check servivce health condition
+//  @Description  Check service health condition
 //  @Tags         health
 //  @Produce      plain
 //  @Success      200  {string}  string  "OK"
@@ -22,4 +42,55 @@ func (h Handler) Health(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	writer.WriteHeader(http.StatusOK)
+}
+
+// CreateUser godoc
+//
+// @Summary      Create a user
+// @Description  Create a user in the system
+// @Tags         user
+// @Produce      json
+// @Success      200  {object}  definitions.User
+// @Router       /user [post]
+//
+// @Param        user  body  definitions.UserInput  true  "user to create"
+func (h Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
+	b, err := io.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		WriteError(w, errors.New("failed to read request body"))
+		return
+	}
+
+	var user definitions.UserInput
+	if err = json.Unmarshal(b, &user); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if err := h.validator.Struct(user); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		WriteError(w, err)
+		return
+	}
+
+	out, err := h.userConn.CreateUser(r.Context(), transformer.FromUserInputDefToModel(user))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	jsonOut, err := json.Marshal(transformer.FromUserEntityToDef(out))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if _, err := w.Write(jsonOut); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 }

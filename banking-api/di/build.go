@@ -7,7 +7,9 @@ import (
 	"github.com/plutus/banking-api/pkg/env"
 	"github.com/plutus/banking-api/pkg/logger"
 	"github.com/plutus/banking-api/pkg/pg"
+	"github.com/plutus/banking-api/repositories"
 	"github.com/plutus/banking-api/rest"
+	"github.com/plutus/banking-api/services"
 	"go.uber.org/dig"
 	"gorm.io/gorm"
 )
@@ -43,9 +45,19 @@ func buildConfig(c *dig.Container) error {
 		return err
 	}
 
-	if err := c.Provide(func() *http.ServeMux {
-		return http.NewServeMux()
+	if err := c.Provide(func(g *gorm.DB) repositories.UserConnector {
+		return repositories.NewUserRepo(g)
 	}); err != nil {
+		return err
+	}
+
+	if err := c.Provide(func(r repositories.UserConnector) services.UserConnector {
+		return services.NewUserService(r)
+	}); err != nil {
+		return err
+	}
+
+	if err := c.Provide(http.NewServeMux); err != nil {
 		return err
 	}
 
