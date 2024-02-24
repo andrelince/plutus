@@ -54,3 +54,18 @@ func (mr *MockAccountConnectorMockRecorder) CreateAccount(arg0, arg1 any) *gomoc
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAccount", reflect.TypeOf((*MockAccountConnector)(nil).CreateAccount), arg0, arg1)
 }
+
+// GetAccountByUserIDAndID mocks base method.
+func (m *MockAccountConnector) GetAccountByUserIDAndID(arg0 context.Context, arg1, arg2 uint) (model.Account, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAccountByUserIDAndID", arg0, arg1, arg2)
+	ret0, _ := ret[0].(model.Account)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAccountByUserIDAndID indicates an expected call of GetAccountByUserIDAndID.
+func (mr *MockAccountConnectorMockRecorder) GetAccountByUserIDAndID(arg0, arg1, arg2 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAccountByUserIDAndID", reflect.TypeOf((*MockAccountConnector)(nil).GetAccountByUserIDAndID), arg0, arg1, arg2)
+}

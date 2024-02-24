@@ -293,3 +293,48 @@ func (h Handler) CreateAccount(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 }
+
+// GetUserAccount godoc
+//
+// @Summary      Retrieve a user
+// @Description  Retrieve a user in the system
+// @Tags         user
+// @Produce      json
+// @Success      200  {object}  definitions.User
+// @Router       /user [get]
+//
+// @Param        id  query  string  true  "id of user to retrieve"
+func (h Handler) GetUserAccount(w http.ResponseWriter, r *http.Request) {
+	userID, err := strconv.Atoi(r.PathValue("user_id"))
+	if err != nil || userID <= 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		WriteError(w, errors.New("user id is invalid"))
+		return
+	}
+
+	accountID, err := strconv.Atoi(r.PathValue("account_id"))
+	if err != nil || accountID <= 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		WriteError(w, errors.New("account id is invalid"))
+		return
+	}
+
+	out, err := h.accountConn.GetAccountByUserIDAndID(r.Context(), uint(userID), uint(accountID))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		WriteError(w, err)
+		return
+	}
+
+	jsonOut, err := json.Marshal(transformer.FromAccountEntityToDef(out))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if _, err := w.Write(jsonOut); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+}

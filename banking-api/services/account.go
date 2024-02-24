@@ -10,6 +10,7 @@ import (
 
 type AccountConnector interface {
 	CreateAccount(ctx context.Context, userID uint) (entities.Account, error)
+	GetAccountByUserIDAndID(ctx context.Context, userID, accountID uint) (entities.Account, error)
 }
 
 type AccountService struct {
@@ -23,9 +24,17 @@ func NewAccountService(accountRepo repositories.AccountConnector) AccountService
 }
 
 func (r AccountService) CreateAccount(ctx context.Context, userID uint) (entities.Account, error) {
-	u, err := r.accountRepo.CreateAccount(ctx, userID)
+	a, err := r.accountRepo.CreateAccount(ctx, userID)
 	if err != nil {
 		return entities.Account{}, err
 	}
-	return transformer.FromAccountModelToEntity(u), nil
+	return transformer.FromAccountModelToEntity(a), nil
+}
+
+func (r AccountService) GetAccountByUserIDAndID(ctx context.Context, userID, accountID uint) (entities.Account, error) {
+	a, err := r.accountRepo.GetAccountByUserIDAndID(ctx, userID, accountID)
+	if err != nil {
+		return entities.Account{}, err
+	}
+	return transformer.FromAccountModelToEntity(a), nil
 }
