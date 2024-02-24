@@ -84,6 +84,21 @@ func (mr *MockUserConnectorMockRecorder) GetUserByID(arg0, arg1 any) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByID", reflect.TypeOf((*MockUserConnector)(nil).GetUserByID), arg0, arg1)
 }
 
+// GetUsers mocks base method.
+func (m *MockUserConnector) GetUsers(arg0 context.Context) ([]model.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUsers", arg0)
+	ret0, _ := ret[0].([]model.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUsers indicates an expected call of GetUsers.
+func (mr *MockUserConnectorMockRecorder) GetUsers(arg0 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUsers", reflect.TypeOf((*MockUserConnector)(nil).GetUsers), arg0)
+}
+
 // UpdateUser mocks base method.
 func (m *MockUserConnector) UpdateUser(arg0 context.Context, arg1 uint, arg2 model.User) (model.User, error) {
 	m.ctrl.T.Helper()

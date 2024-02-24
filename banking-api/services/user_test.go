@@ -191,3 +191,45 @@ func Test_GetUserByID(t *testing.T) {
 		})
 	}
 }
+
+func Test_GetUsers(t *testing.T) {
+
+	testCases := map[string]struct {
+		ctx        context.Context
+		serviceOut []entities.User
+		serviceErr error
+		repoOut    []model.User
+		repoErr    error
+	}{
+		"success": {
+			ctx:        context.Background(),
+			serviceOut: []entities.User{{ID: 1, Name: "a", Email: "a@a.com"}},
+			repoOut:    []model.User{{ID: 1, Name: "a", Email: "a@a.com"}},
+		},
+		"error": {
+			ctx:        context.Background(),
+			serviceErr: errors.New("error"),
+			repoErr:    errors.New("error"),
+		},
+	}
+
+	for name, args := range testCases {
+		t.Run(name, func(t *testing.T) {
+			assert := assert.New(t)
+			ctrl := gomock.NewController(t)
+			mctr := mocks.NewMockUserConnector(ctrl)
+			defer ctrl.Finish()
+
+			mctr.
+				EXPECT().
+				GetUsers(args.ctx).
+				Return(args.repoOut, args.repoErr)
+
+			svc := NewUserService(mctr)
+
+			out, err := svc.GetUsers(args.ctx)
+			assert.ElementsMatch(args.serviceOut, out)
+			assert.Equal(args.serviceErr, err)
+		})
+	}
+}

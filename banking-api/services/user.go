@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 
+	"github.com/plutus/banking-api/pkg/slice"
 	"github.com/plutus/banking-api/repositories"
 	"github.com/plutus/banking-api/services/entities"
 	"github.com/plutus/banking-api/services/transformer"
@@ -13,6 +14,7 @@ type UserConnector interface {
 	UpdateUser(ctx context.Context, id uint, user entities.User) (entities.User, error)
 	DeleteUser(ctx context.Context, id uint) error
 	GetUserByID(ctx context.Context, id uint) (entities.User, error)
+	GetUsers(ctx context.Context) ([]entities.User, error)
 }
 
 type UserService struct {
@@ -51,4 +53,12 @@ func (r UserService) GetUserByID(ctx context.Context, id uint) (entities.User, e
 		return entities.User{}, err
 	}
 	return transformer.FromUserModelToEntity(u), nil
+}
+
+func (r UserService) GetUsers(ctx context.Context) ([]entities.User, error) {
+	users, err := r.userRepo.GetUsers(ctx)
+	if err != nil {
+		return []entities.User{}, err
+	}
+	return slice.FromManyToMany(users, transformer.FromUserModelToEntity), nil
 }

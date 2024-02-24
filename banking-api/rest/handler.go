@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/plutus/banking-api/pkg/slice"
 	"github.com/plutus/banking-api/rest/definitions"
 	"github.com/plutus/banking-api/rest/transformer"
 	"github.com/plutus/banking-api/services"
@@ -209,6 +210,37 @@ func (h Handler) GetUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jsonOut, err := json.Marshal(transformer.FromUserEntityToDef(out))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if _, err := w.Write(jsonOut); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+}
+
+// GetUsers godoc
+//
+// @Summary      Retrieve a list of users
+// @Description  Retrieve a list of users in the system
+// @Tags         user
+// @Produce      json
+// @Success      200  {array}  []definitions.User
+// @Router       /users [get]
+func (h Handler) GetUsers(w http.ResponseWriter, r *http.Request) {
+	out, err := h.userConn.GetUsers(r.Context())
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		WriteError(w, err)
+		return
+	}
+
+	jsonOut, err := json.Marshal(
+		slice.FromManyToMany(out, transformer.FromUserEntityToDef),
+	)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

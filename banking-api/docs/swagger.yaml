@@ -120,4 +120,21 @@ paths:
       summary: Update a user
       tags:
       - user
+  /users:
+    get:
+      description: Retrieve a list of users in the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              items:
+                $ref: '#/definitions/definitions.User'
+              type: array
+            type: array
+      summary: Retrieve a list of users
+      tags:
+      - user
 swagger: "2.0"

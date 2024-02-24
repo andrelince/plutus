@@ -20,6 +20,7 @@ func NewRest(router *http.ServeMux, r Handler, log logger.Logger) error {
 	router.HandleFunc("PUT /user/{id}", r.UpdateUser)
 	router.HandleFunc("DELETE /user/{id}", r.DeleteUser)
 	router.HandleFunc("GET /user/{id}", r.GetUser)
+	router.HandleFunc("GET /users", r.GetUsers)
 
 	router.HandleFunc("GET /healthz", r.Health)
 	router.Handle("GET /swagger/*", httpSwagger.Handler())

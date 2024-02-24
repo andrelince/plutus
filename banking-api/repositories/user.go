@@ -14,6 +14,7 @@ type UserConnector interface {
 	UpdateUser(ctx context.Context, id uint, user model.User) (model.User, error)
 	DeleteUser(ctx context.Context, id uint) error
 	GetUserByID(ctx context.Context, id uint) (model.User, error)
+	GetUsers(ctx context.Context) ([]model.User, error)
 }
 
 type UserRepo struct {
@@ -61,4 +62,12 @@ func (r UserRepo) GetUserByID(ctx context.Context, id uint) (model.User, error) 
 	var found model.User
 	foundRes := r.g.First(&found, id)
 	return found, foundRes.Error
+}
+
+func (r UserRepo) GetUsers(ctx context.Context) ([]model.User, error) {
+	var out []model.User
+	res := r.g.
+		WithContext(ctx).
+		Find(&out)
+	return out, res.Error
 }
