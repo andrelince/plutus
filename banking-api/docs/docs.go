@@ -37,6 +37,33 @@ const docTemplate = `{
             }
         },
         "/user": {
+            "get": {
+                "description": "Retrieve a user in the system",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Retrieve a user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id of user to retrieve",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/definitions.User"
+                        }
+                    }
+                }
+            },
             "put": {
                 "description": "Update a user in the system",
                 "produces": [
@@ -99,6 +126,30 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/definitions.User"
                         }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a user from the system",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Delete a user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id of user to delete",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
                     }
                 }
             }

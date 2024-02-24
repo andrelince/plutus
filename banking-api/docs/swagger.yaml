@@ -43,6 +43,40 @@ paths:
       tags:
       - health
   /user:
+    delete:
+      description: Delete a user from the system
+      parameters:
+      - description: id of user to delete
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+      summary: Delete a user
+      tags:
+      - user
+    get:
+      description: Retrieve a user in the system
+      parameters:
+      - description: id of user to retrieve
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/definitions.User'
+      summary: Retrieve a user
+      tags:
+      - user
     post:
       description: Create a user in the system
       parameters:

@@ -31,12 +31,12 @@ func NewHandler(
 
 // Healthz godoc
 //
-//	@Summary      Check service health
-//	@Description  Check service health condition
-//	@Tags         health
-//	@Produce      plain
-//	@Success      200  {string}  string  "OK"
-//	@Router       /healthz [get]
+//  @Summary      Check service health
+//  @Description  Check service health condition
+//  @Tags         health
+//  @Produce      plain
+//  @Success      200  {string}  string  "OK"
+//  @Router       /healthz [get]
 func (h Handler) Health(writer http.ResponseWriter, request *http.Request) {
 	if _, err := writer.Write([]byte(`OK`)); err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
@@ -163,7 +163,7 @@ func (h Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 // @Tags         user
 // @Produce      json
 // @Success      200
-// @Router       /user [put]
+// @Router       /user [delete]
 //
 // @Param        id  query  string  true  "id of user to delete"
 func (h Handler) DeleteUser(w http.ResponseWriter, r *http.Request) {
