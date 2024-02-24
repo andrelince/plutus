@@ -147,3 +147,47 @@ func Test_DeleteUser(t *testing.T) {
 		})
 	}
 }
+
+func Test_GetUserByID(t *testing.T) {
+
+	testCases := map[string]struct {
+		ctx        context.Context
+		id         uint
+		serviceOut entities.User
+		serviceErr error
+		repoOut    model.User
+		repoErr    error
+	}{
+		"success": {
+			ctx:        context.Background(),
+			id:         1,
+			serviceOut: entities.User{ID: 1, Name: "a", Email: "a@a.com"},
+			repoOut:    model.User{ID: 1, Name: "a", Email: "a@a.com"},
+		},
+		"error": {
+			ctx:        context.Background(),
+			serviceErr: errors.New("error"),
+			repoErr:    errors.New("error"),
+		},
+	}
+
+	for name, args := range testCases {
+		t.Run(name, func(t *testing.T) {
+			assert := assert.New(t)
+			ctrl := gomock.NewController(t)
+			mctr := mocks.NewMockUserConnector(ctrl)
+			defer ctrl.Finish()
+
+			mctr.
+				EXPECT().
+				GetUserByID(args.ctx, args.id).
+				Return(args.repoOut, args.repoErr)
+
+			svc := NewUserService(mctr)
+
+			out, err := svc.GetUserByID(args.ctx, args.id)
+			assert.Equal(args.serviceOut, out)
+			assert.Equal(args.serviceErr, err)
+		})
+	}
+}

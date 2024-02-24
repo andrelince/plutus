@@ -165,7 +165,7 @@ func (h Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 // @Success      200
 // @Router       /user [put]
 //
-// @Param        id    query  string                 true  "id of user to delete"
+// @Param        id  query  string  true  "id of user to delete"
 func (h Handler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil || id <= 0 {
@@ -180,5 +180,43 @@ func (h Handler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
+}
+
+// GetUser godoc
+//
+// @Summary      Retrieve a user
+// @Description  Retrieve a user in the system
+// @Tags         user
+// @Produce      json
+// @Success      200  {object}  definitions.User
+// @Router       /user [get]
+//
+// @Param        id  query  string  true  "id of user to retrieve"
+func (h Handler) GetUser(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil || id <= 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		WriteError(w, errors.New("user id is invalid"))
+		return
+	}
+
+	out, err := h.userConn.GetUserByID(r.Context(), uint(id))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		WriteError(w, err)
+		return
+	}
+
+	jsonOut, err := json.Marshal(transformer.FromUserEntityToDef(out))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if _, err := w.Write(jsonOut); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 }
