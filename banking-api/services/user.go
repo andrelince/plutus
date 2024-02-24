@@ -10,6 +10,7 @@ import (
 
 type UserConnector interface {
 	CreateUser(ctx context.Context, user entities.User) (entities.User, error)
+	UpdateUser(ctx context.Context, id uint, user entities.User) (entities.User, error)
 }
 
 type UserService struct {
@@ -24,6 +25,14 @@ func NewUserService(userRepo repositories.UserConnector) UserService {
 
 func (r UserService) CreateUser(ctx context.Context, user entities.User) (entities.User, error) {
 	u, err := r.userRepo.CreateUser(ctx, transformer.FromUserEntityToModel(user))
+	if err != nil {
+		return entities.User{}, err
+	}
+	return transformer.FromUserModelToEntity(u), nil
+}
+
+func (r UserService) UpdateUser(ctx context.Context, id uint, user entities.User) (entities.User, error) {
+	u, err := r.userRepo.UpdateUser(ctx, id, transformer.FromUserEntityToModel(user))
 	if err != nil {
 		return entities.User{}, err
 	}

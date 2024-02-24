@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"strconv"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/plutus/banking-api/rest/definitions"
@@ -79,6 +80,66 @@ func (h Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	out, err := h.userConn.CreateUser(r.Context(), transformer.FromUserInputDefToModel(user))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		WriteError(w, err)
+		return
+	}
+
+	jsonOut, err := json.Marshal(transformer.FromUserEntityToDef(out))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if _, err := w.Write(jsonOut); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+}
+
+// UpdateUser godoc
+//
+// @Summary      Update a user
+// @Description  Update a user in the system
+// @Tags         user
+// @Produce      json
+// @Success      200  {object}  definitions.User
+// @Router       /user [put]
+//
+// @Param        id    query  string                 true  "id of user to update"
+// @Param        user  body   definitions.UserInput  true  "user to update"
+func (h Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil || id <= 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		WriteError(w, errors.New("user id is invalid"))
+		return
+	}
+
+	defer r.Body.Close()
+	b, err := io.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		WriteError(w, errors.New("failed to read request body"))
+		return
+	}
+
+	var user definitions.UserInput
+	if err = json.Unmarshal(b, &user); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if err := h.validator.Struct(user); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		WriteError(w, err)
+		return
+	}
+
+	out, err := h.userConn.UpdateUser(r.Context(), uint(id), transformer.FromUserInputDefToModel(user))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		WriteError(w, err)
 		return
 	}
 

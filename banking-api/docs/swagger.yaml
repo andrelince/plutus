@@ -16,10 +16,11 @@ definitions:
     properties:
       email:
         type: string
-      id:
-        type: integer
       name:
         type: string
+    required:
+    - email
+    - name
     type: object
 host: locahost:3000
 info:
@@ -59,6 +60,30 @@ paths:
           schema:
             $ref: '#/definitions/definitions.User'
       summary: Create a user
+      tags:
+      - user
+    put:
+      description: Update a user in the system
+      parameters:
+      - description: id of user to update
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: user to update
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/definitions.UserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/definitions.User'
+      summary: Update a user
       tags:
       - user
 swagger: "2.0"

@@ -37,6 +37,42 @@ const docTemplate = `{
             }
         },
         "/user": {
+            "put": {
+                "description": "Update a user in the system",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Update a user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id of user to update",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "user to update",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definitions.UserInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/definitions.User"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Create a user in the system",
                 "produces": [
@@ -91,12 +127,13 @@ const docTemplate = `{
         },
         "definitions.UserInput": {
             "type": "object",
+            "required": [
+                "email",
+                "name"
+            ],
             "properties": {
                 "email": {
                     "type": "string"
-                },
-                "id": {
-                    "type": "integer"
                 },
                 "name": {
                     "type": "string"

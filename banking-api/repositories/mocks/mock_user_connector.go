@@ -54,3 +54,18 @@ func (mr *MockUserConnectorMockRecorder) CreateUser(arg0, arg1 any) *gomock.Call
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockUserConnector)(nil).CreateUser), arg0, arg1)
 }
+
+// UpdateUser mocks base method.
+func (m *MockUserConnector) UpdateUser(arg0 context.Context, arg1 uint, arg2 model.User) (model.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateUser", arg0, arg1, arg2)
+	ret0, _ := ret[0].(model.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateUser indicates an expected call of UpdateUser.
+func (mr *MockUserConnectorMockRecorder) UpdateUser(arg0, arg1, arg2 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUser", reflect.TypeOf((*MockUserConnector)(nil).UpdateUser), arg0, arg1, arg2)
+}
