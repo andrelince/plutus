@@ -35,12 +35,12 @@ func NewHandler(
 
 // Healthz godoc
 //
-//	@Summary      Check service health
-//	@Description  Check service health condition
-//	@Tags         health
-//	@Produce      plain
-//	@Success      200  {string}  string  "OK"
-//	@Router       /healthz [get]
+//  @Summary      Check service health
+//  @Description  Check service health condition
+//  @Tags         health
+//  @Produce      plain
+//  @Success      200  {string}  string  "OK"
+//  @Router       /healthz [get]
 func (h Handler) Health(writer http.ResponseWriter, request *http.Request) {
 	if _, err := writer.Write([]byte(`OK`)); err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
@@ -265,7 +265,7 @@ func (h Handler) GetUsers(w http.ResponseWriter, r *http.Request) {
 // @Success      200  {object}  definitions.Account
 // @Router       /user/{id}/account [post]
 //
-// @Param        id    query  string                 true  "id of user for whom to create the account"
+// @Param        id  query  string  true  "id of user for whom to create the account"
 func (h Handler) CreateAccount(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil || id <= 0 {

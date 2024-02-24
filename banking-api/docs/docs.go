@@ -154,6 +154,35 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/{id}/account": {
+            "post": {
+                "description": "Create a user account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Create a user account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id of user for whom to create the account",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/definitions.Account"
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "get": {
                 "description": "Retrieve a list of users in the system",
@@ -182,6 +211,29 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "definitions.Account": {
+            "type": "object",
+            "properties": {
+                "account_number": {
+                    "type": "string"
+                },
+                "balance": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "definitions.User": {
             "type": "object",
             "properties": {
