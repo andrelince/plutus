@@ -12,6 +12,7 @@ import (
 type UserConnector interface {
 	CreateUser(ctx context.Context, user model.User) (model.User, error)
 	UpdateUser(ctx context.Context, id uint, user model.User) (model.User, error)
+	DeleteUser(ctx context.Context, id uint) error
 }
 
 type UserRepo struct {
@@ -43,4 +44,16 @@ func (r UserRepo) UpdateUser(ctx context.Context, id uint, user model.User) (mod
 		WithContext(ctx).
 		Save(&user)
 	return user, res.Error
+}
+
+func (r UserRepo) DeleteUser(ctx context.Context, id uint) error {
+	var found model.User
+	if foundRes := r.g.First(&found, id); foundRes.Error != nil {
+		return foundRes.Error
+	}
+
+	res := r.g.
+		WithContext(ctx).
+		Delete(&model.User{}, id)
+	return res.Error
 }

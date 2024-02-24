@@ -109,3 +109,41 @@ func Test_UpdateUser(t *testing.T) {
 		})
 	}
 }
+
+func Test_DeleteUser(t *testing.T) {
+
+	testCases := map[string]struct {
+		ctx        context.Context
+		id         uint
+		serviceErr error
+		repoErr    error
+	}{
+		"success": {
+			ctx: context.Background(),
+		},
+		"error": {
+			ctx:        context.Background(),
+			serviceErr: errors.New("error"),
+			repoErr:    errors.New("error"),
+		},
+	}
+
+	for name, args := range testCases {
+		t.Run(name, func(t *testing.T) {
+			assert := assert.New(t)
+			ctrl := gomock.NewController(t)
+			mctr := mocks.NewMockUserConnector(ctrl)
+			defer ctrl.Finish()
+
+			mctr.
+				EXPECT().
+				DeleteUser(args.ctx, args.id).
+				Return(args.repoErr)
+
+			svc := NewUserService(mctr)
+
+			err := svc.DeleteUser(args.ctx, args.id)
+			assert.Equal(args.serviceErr, err)
+		})
+	}
+}

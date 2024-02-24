@@ -11,6 +11,7 @@ import (
 type UserConnector interface {
 	CreateUser(ctx context.Context, user entities.User) (entities.User, error)
 	UpdateUser(ctx context.Context, id uint, user entities.User) (entities.User, error)
+	DeleteUser(ctx context.Context, id uint) error
 }
 
 type UserService struct {
@@ -37,4 +38,8 @@ func (r UserService) UpdateUser(ctx context.Context, id uint, user entities.User
 		return entities.User{}, err
 	}
 	return transformer.FromUserModelToEntity(u), nil
+}
+
+func (r UserService) DeleteUser(ctx context.Context, id uint) error {
+	return r.userRepo.DeleteUser(ctx, id)
 }
