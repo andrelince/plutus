@@ -7,8 +7,10 @@ import (
 
 	"github.com/plutus/banking-api/config"
 	"github.com/plutus/banking-api/di"
+	"github.com/plutus/banking-api/pkg/pg"
 	"github.com/plutus/banking-api/repositories/model"
 	"github.com/plutus/banking-api/rest"
+	"github.com/plutus/banking-api/seeds"
 	"github.com/rs/cors"
 	"golang.org/x/sync/errgroup"
 	"gorm.io/gorm"
@@ -27,6 +29,12 @@ func main() {
 			&model.Transaction{},
 			&model.Currency{},
 		)
+	}); err != nil {
+		panic(err)
+	}
+
+	if err := c.Invoke(func(runner pg.SeedRunner) error {
+		return runner.RunSeeds(seeds.GetSeeds()...)
 	}); err != nil {
 		panic(err)
 	}

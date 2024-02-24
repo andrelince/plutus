@@ -45,6 +45,10 @@ func buildConfig(c *dig.Container) error {
 		return err
 	}
 
+	if err := c.Provide(pg.NewSeedRunner); err != nil {
+		return err
+	}
+
 	if err := c.Provide(func(g *gorm.DB) repositories.UserConnector {
 		return repositories.NewUserRepo(g)
 	}); err != nil {
