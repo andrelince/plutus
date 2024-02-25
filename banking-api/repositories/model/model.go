@@ -2,6 +2,8 @@ package model
 
 import (
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type User struct {
@@ -10,7 +12,8 @@ type User struct {
 	Email     string `gorm:"type:varchar(100);uniqueIndex"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	Accounts  []Account `gorm:"foreignKey:UserID"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+	Accounts  []Account      `gorm:"foreignKey:UserID"`
 }
 
 type Account struct {

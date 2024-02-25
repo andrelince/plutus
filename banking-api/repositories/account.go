@@ -36,6 +36,17 @@ func NewAccountRepo(g *gorm.DB, settings TransactionSettings) AccountRepo {
 }
 
 func (r AccountRepo) CreateAccount(ctx context.Context, userID uint) (model.Account, error) {
+	foundUser := model.User{ID: userID}
+	err := r.g.
+		WithContext(ctx).
+		First(&foundUser).
+		Error
+
+	// user must not be deleted
+	if err != nil {
+		return model.Account{}, err
+	}
+
 	account := model.Account{UserID: userID}
 	res := r.g.
 		WithContext(ctx).
@@ -57,6 +68,17 @@ func (r AccountRepo) CreateTransaction(ctx context.Context, accountID uint, tran
 		WithContext(ctx).
 		First(&account).
 		Error
+	if err != nil {
+		return model.Transaction{}, err
+	}
+
+	foundUser := model.User{ID: account.UserID}
+	err = r.g.
+		WithContext(ctx).
+		First(&foundUser).
+		Error
+
+	// user must not be deleted
 	if err != nil {
 		return model.Transaction{}, err
 	}
