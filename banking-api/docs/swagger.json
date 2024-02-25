@@ -46,6 +46,41 @@
                 }
             }
         },
+        "/account/{id}/transactions": {
+            "get": {
+                "description": "Retrieve a list of account transactions in the system",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account"
+                ],
+                "summary": "Retrieve a list of account transactions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id of account from where to retrieve transactions",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/definitions.Account"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/healthz": {
             "get": {
                 "description": "Check service health condition",

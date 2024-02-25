@@ -399,3 +399,42 @@ func (h Handler) CreateTransaction(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 }
+
+// GetTransactions godoc
+//
+// @Summary      Retrieve a list of account transactions
+// @Description  Retrieve a list of account transactions in the system
+// @Tags         account
+// @Produce      json
+// @Success      200  {array}  []definitions.Account
+// @Router       /account/{id}/transactions [get]
+// @Param        id  path  string  true  "id of account from where to retrieve transactions"
+func (h Handler) GetTransactions(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil || id <= 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		WriteError(w, errors.New("account id is invalid"))
+		return
+	}
+
+	out, err := h.accountConn.GetAccountTransactions(r.Context(), uint(id))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		WriteError(w, err)
+		return
+	}
+
+	jsonOut, err := json.Marshal(
+		slice.FromManyToMany(out, transformer.FromTransactionEntityToDef),
+	)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if _, err := w.Write(jsonOut); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+}

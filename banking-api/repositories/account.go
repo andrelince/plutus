@@ -15,6 +15,7 @@ type AccountConnector interface {
 	CreateAccount(ctx context.Context, userID uint) (model.Account, error)
 	GetAccountByUserIDAndID(ctx context.Context, userID, accountID uint) (model.Account, error)
 	CreateTransaction(ctx context.Context, accountID uint, transaction model.Transaction) (model.Transaction, error)
+	GetAccountTransactions(ctx context.Context, accountID uint) ([]model.Transaction, error)
 }
 
 type TransactionSettings struct {
@@ -115,4 +116,14 @@ func (r AccountRepo) getConversionRate(fromCurrencyCode, toCurrencyCode string, 
 		First(&conversionRate).
 		Error
 	return conversionRate.ConversionRate, err
+}
+
+func (r AccountRepo) GetAccountTransactions(ctx context.Context, accountID uint) ([]model.Transaction, error) {
+	var transactions []model.Transaction
+	err := r.g.
+		Model(model.Transaction{AccountID: accountID}).
+		Order("created_at desc").
+		Find(&transactions).
+		Error
+	return transactions, err
 }

@@ -154,3 +154,48 @@ func Test_CreateTransaction(t *testing.T) {
 		})
 	}
 }
+
+func Test_GetTransactions(t *testing.T) {
+
+	testCases := map[string]struct {
+		ctx        context.Context
+		accountID  uint
+		serviceOut []entities.Transaction
+		serviceErr error
+		repoOut    []model.Transaction
+		repoErr    error
+	}{
+		"success": {
+			ctx:        context.Background(),
+			accountID:  1,
+			serviceOut: []entities.Transaction{{ID: 1}},
+			repoOut:    []model.Transaction{{ID: 1}},
+		},
+		"error": {
+			ctx:        context.Background(),
+			accountID:  1,
+			serviceErr: errors.New("error"),
+			repoErr:    errors.New("error"),
+		},
+	}
+
+	for name, args := range testCases {
+		t.Run(name, func(t *testing.T) {
+			assert := assert.New(t)
+			ctrl := gomock.NewController(t)
+			mctr := mocks.NewMockAccountConnector(ctrl)
+			defer ctrl.Finish()
+
+			mctr.
+				EXPECT().
+				GetAccountTransactions(args.ctx, args.accountID).
+				Return(args.repoOut, args.repoErr)
+
+			svc := NewAccountService(mctr)
+
+			out, err := svc.GetAccountTransactions(args.ctx, args.accountID)
+			assert.ElementsMatch(args.serviceOut, out)
+			assert.Equal(args.serviceErr, err)
+		})
+	}
+}

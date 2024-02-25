@@ -107,6 +107,29 @@ paths:
       summary: Create an account transaction
       tags:
       - account
+  /account/{id}/transactions:
+    get:
+      description: Retrieve a list of account transactions in the system
+      parameters:
+      - description: id of account from where to retrieve transactions
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              items:
+                $ref: '#/definitions/definitions.Account'
+              type: array
+            type: array
+      summary: Retrieve a list of account transactions
+      tags:
+      - account
   /healthz:
     get:
       description: Check service health condition
