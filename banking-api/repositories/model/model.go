@@ -24,20 +24,29 @@ type Account struct {
 }
 
 type Transaction struct {
-	ID             uint    `gorm:"primaryKey"`
-	AccountID      uint    `gorm:"index"`
-	Type           string  `gorm:"type:varchar(50)"`
-	Amount         float64 `gorm:"type:decimal(10,2)"`
-	TransactionFee float64 `gorm:"type:decimal(10,2)"`
-	CurrencyCode   string  `gorm:"type:varchar(3)"`
-	Status         string  `gorm:"type:varchar(50)"`
-	CreatedAt      time.Time
-	UpdatedAt      time.Time
+	ID              uint    `gorm:"primaryKey"`
+	AccountID       uint    `gorm:"index"`
+	Type            string  `gorm:"type:varchar(50)"`   // debit or credit
+	Amount          float64 `gorm:"type:decimal(10,2)"` // original amount
+	CurrencyCode    string  `gorm:"type:varchar(3)"`
+	ConvertedAmount float64 `gorm:"type:decimal(10,2)"` // amount after currency conversion
+	ConversionRate  float64 `gorm:"type:decimal(10,6)"` // rate used for conversion
+	TransactionFee  float64 `gorm:"type:decimal(10,2)"`
+	Status          string  `gorm:"type:varchar(50)"` // completed / failed
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
 }
 
 type Currency struct {
-	CurrencyCode   string  `gorm:"primaryKey;type:varchar(3)"`
-	Name           string  `gorm:"type:varchar(100)"`
-	Symbol         string  `gorm:"type:varchar(10)"`
-	ConversionRate float64 `gorm:"type:decimal(10,2)"`
+	CurrencyCode string `gorm:"primaryKey;type:varchar(3)"`
+	Name         string `gorm:"type:varchar(100)"`
+	Symbol       string `gorm:"type:varchar(10)"`
+}
+
+type CurrencyConversionRate struct {
+	ID               uint    `gorm:"primaryKey"`
+	FromCurrencyCode string  `gorm:"type:varchar(3);index"`
+	ToCurrencyCode   string  `gorm:"type:varchar(3);index"`
+	ConversionRate   float64 `gorm:"type:decimal(10,6)"`
+	EffectiveDate    time.Time
 }

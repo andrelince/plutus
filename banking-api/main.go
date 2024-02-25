@@ -28,6 +28,7 @@ func main() {
 			&model.Account{},
 			&model.Transaction{},
 			&model.Currency{},
+			&model.CurrencyConversionRate{},
 		)
 	}); err != nil {
 		panic(err)
