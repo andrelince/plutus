@@ -32,3 +32,5 @@ The database is initialized with some seed entries accessible at `/banking-api/s
 - **Database consistency**: some database fields should be reconsidered namely the transaction type field which right now is only a string but should be migrated to an enum type (`CREDIT / DEBIT`) to better safeguard the data
 
 - **Microservice Possibility**: if the system complexity and growth is expected it could make sense to split the banking-api service into smaller microservices such as user-api, for user specific operation, and account-api, for operations and transaction management.
+
+- **Error messages**: considering the addition of standard error messages between layers (`rest/services/repositories`) would be benificial. It could also enable error message translation depending on the user location
