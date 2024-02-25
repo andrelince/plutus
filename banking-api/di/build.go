@@ -5,7 +5,6 @@ import (
 
 	"github.com/plutus/banking-api/config"
 	"github.com/plutus/banking-api/pkg/env"
-	"github.com/plutus/banking-api/pkg/logger"
 	"github.com/plutus/banking-api/pkg/pg"
 	"github.com/plutus/banking-api/repositories"
 	"github.com/plutus/banking-api/rest"
@@ -21,21 +20,11 @@ func buildConfig(c *dig.Container) error {
 		return err
 	}
 
-	if err := c.Provide(config.NewLoggerSettings); err != nil {
-		return err
-	}
-
 	if err := c.Provide(config.NewPostgresSettings); err != nil {
 		return err
 	}
 
 	if err := c.Provide(config.NewTransactionSettings); err != nil {
-		return err
-	}
-
-	if err := c.Provide(func(s logger.Settings) (logger.Logger, error) {
-		return logger.New(s), nil
-	}); err != nil {
 		return err
 	}
 
