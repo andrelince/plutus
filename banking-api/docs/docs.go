@@ -405,7 +405,16 @@ const docTemplate = `{
         "definitions.User": {
             "type": "object",
             "properties": {
+                "accounts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definitions.Account"
+                    }
+                },
                 "created_at": {
+                    "type": "string"
+                },
+                "deleted_at": {
                     "type": "string"
                 },
                 "email": {

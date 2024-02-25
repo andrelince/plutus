@@ -8,6 +8,12 @@ The Plutus banking api supports the following operations
 | Account       | CR            |
 | Transaction   | CR            |
 
+##### Design choices
+
+- The API was designed considering the perspective of the bank.
+- Transactions are not updateable / removable. If a transaction was a *"mistake"* it should be corrected by a following transaction.
+- Deletion is in most cases soft-delete as it is important to keep historical record.
+
 ### Pre-requisites
 
 - `docker (tested with 25.0.3)`

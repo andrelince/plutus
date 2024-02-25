@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/plutus/banking-api/repositories/model"
@@ -35,14 +36,19 @@ func (r UserRepo) CreateUser(ctx context.Context, user model.User) (model.User, 
 }
 
 func (r UserRepo) UpdateUser(ctx context.Context, id uint, user model.User) (model.User, error) {
-	if _, err := r.GetUserByID(ctx, id); err != nil {
+	u, err := r.GetUserByID(ctx, id)
+	if err != nil {
 		return model.User{}, err
+	}
+	if u.DeletedAt.Valid {
+		return model.User{}, errors.New("record not found")
 	}
 
 	user.ID = id
 	user.UpdatedAt = time.Now()
 	res := r.g.
 		WithContext(ctx).
+		Preload("Accounts").
 		Save(&user)
 	return user, res.Error
 }
@@ -60,14 +66,21 @@ func (r UserRepo) DeleteUser(ctx context.Context, id uint) error {
 
 func (r UserRepo) GetUserByID(ctx context.Context, id uint) (model.User, error) {
 	var found model.User
-	foundRes := r.g.First(&found, id)
-	return found, foundRes.Error
+	err := r.g.
+		WithContext(ctx).
+		Unscoped().
+		Preload("Accounts").
+		First(&found, id).
+		Error
+	return found, err
 }
 
 func (r UserRepo) GetUsers(ctx context.Context) ([]model.User, error) {
 	var out []model.User
 	res := r.g.
 		WithContext(ctx).
+		Unscoped().
+		Preload("Accounts").
 		Find(&out)
 	return out, res.Error
 }

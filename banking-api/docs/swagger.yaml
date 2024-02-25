@@ -54,7 +54,13 @@ definitions:
     type: object
   definitions.User:
     properties:
+      accounts:
+        items:
+          $ref: '#/definitions/definitions.Account'
+        type: array
       created_at:
+        type: string
+      deleted_at:
         type: string
       email:
         type: string
