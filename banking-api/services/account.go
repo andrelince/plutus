@@ -11,6 +11,7 @@ import (
 type AccountConnector interface {
 	CreateAccount(ctx context.Context, userID uint) (entities.Account, error)
 	GetAccountByUserIDAndID(ctx context.Context, userID, accountID uint) (entities.Account, error)
+	CreateTransaction(ctx context.Context, accountID uint, transaction entities.Transaction) (entities.Transaction, error)
 }
 
 type AccountService struct {
@@ -37,4 +38,12 @@ func (r AccountService) GetAccountByUserIDAndID(ctx context.Context, userID, acc
 		return entities.Account{}, err
 	}
 	return transformer.FromAccountModelToEntity(a), nil
+}
+
+func (r AccountService) CreateTransaction(ctx context.Context, accountID uint, transaction entities.Transaction) (entities.Transaction, error) {
+	t, err := r.accountRepo.CreateTransaction(ctx, accountID, transformer.FromTransactionEntityToModel(transaction))
+	if err != nil {
+		return entities.Transaction{}, err
+	}
+	return transformer.FromTransactionModelToEntity(t), nil
 }

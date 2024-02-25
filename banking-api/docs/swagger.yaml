@@ -14,6 +14,44 @@ definitions:
       user_id:
         type: integer
     type: object
+  definitions.Transaction:
+    properties:
+      account_id:
+        type: integer
+      amount:
+        type: number
+      created_at:
+        type: string
+      currency_code:
+        type: string
+      id:
+        type: integer
+      status:
+        type: string
+      transaction_fee:
+        type: number
+      type:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  definitions.TransactionInput:
+    properties:
+      amount:
+        type: number
+      currency_code:
+        enum:
+        - USD
+        - EUR
+        type: string
+      type:
+        enum:
+        - debit
+        - credit
+        type: string
+    required:
+    - amount
+    type: object
   definitions.User:
     properties:
       created_at:
@@ -37,13 +75,38 @@ definitions:
     - email
     - name
     type: object
-host: locahost:3000
+host: localhost:3000
 info:
   contact: {}
   description: This is a API representing a simple banking system.
   title: Plutus Banking API
   version: "1.0"
 paths:
+  /account/{id}/transaction:
+    post:
+      description: Create an account transaction in the system
+      parameters:
+      - description: transaction to create
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/definitions.TransactionInput'
+      - description: id of account to create transaction in
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/definitions.Transaction'
+      summary: Create an account transaction
+      tags:
+      - account
   /healthz:
     get:
       description: Check service health condition
@@ -58,40 +121,6 @@ paths:
       tags:
       - health
   /user:
-    delete:
-      description: Delete a user from the system
-      parameters:
-      - description: id of user to delete
-        in: query
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: ""
-      summary: Delete a user
-      tags:
-      - user
-    get:
-      description: Retrieve a user in the system
-      parameters:
-      - description: id of user to retrieve
-        in: query
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/definitions.User'
-      summary: Retrieve a user
-      tags:
-      - user
     post:
       description: Create a user in the system
       parameters:
@@ -111,11 +140,46 @@ paths:
       summary: Create a user
       tags:
       - user
+  /user/{id}:
+    delete:
+      description: Delete a user from the system
+      parameters:
+      - description: id of user to delete
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+      summary: Delete a user
+      tags:
+      - user
+    get:
+      description: Retrieve a user in the system
+      parameters:
+      - description: id of user to retrieve
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/definitions.User'
+      summary: Retrieve a user
+      tags:
+      - user
     put:
       description: Update a user in the system
       parameters:
       - description: id of user to update
-        in: query
+        in: path
         name: id
         required: true
         type: string
@@ -140,7 +204,7 @@ paths:
       description: Create a user account
       parameters:
       - description: id of user for whom to create the account
-        in: query
+        in: path
         name: id
         required: true
         type: string
@@ -153,7 +217,31 @@ paths:
             $ref: '#/definitions/definitions.Account'
       summary: Create a user account
       tags:
-      - user
+      - account
+  /user/{user_id}/account/{account_id}:
+    get:
+      description: Retrieve a user account in the system
+      parameters:
+      - description: id of user to retrieve
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: id of account to retrieve
+        in: path
+        name: account_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/definitions.Account'
+      summary: Retrieve a user account
+      tags:
+      - account
   /users:
     get:
       description: Retrieve a list of users in the system

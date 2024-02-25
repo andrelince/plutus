@@ -24,3 +24,27 @@ func FromAccountEntityToModel(in entities.Account) model.Account {
 		Balance:       in.Balance,
 	}
 }
+
+func FromTransactionEntityToModel(in entities.Transaction) model.Transaction {
+	return model.Transaction{
+		Type:         in.Type,
+		Amount:       in.Amount,
+		CurrencyCode: in.CurrencyCode,
+	}
+}
+
+func FromTransactionModelToEntity(in model.Transaction) entities.Transaction {
+	return entities.Transaction{
+		ID:              in.ID,
+		Type:            in.Type,
+		Amount:          in.Amount,
+		CurrencyCode:    in.CurrencyCode,
+		AccountID:       in.AccountID,
+		ConvertedAmount: in.ConvertedAmount,
+		ConversionRate:  in.ConversionRate,
+		TransactionFee:  in.TransactionFee,
+		Status:          in.Status,
+		CreatedAt:       in.CreatedAt,
+		UpdatedAt:       in.UpdatedAt,
+	}
+}

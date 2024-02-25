@@ -15,3 +15,25 @@ func FromAccountEntityToDef(in entities.Account) definitions.Account {
 		UpdatedAt:     in.UpdatedAt,
 	}
 }
+
+func FromTransactionInputDefToModel(in definitions.TransactionInput) entities.Transaction {
+	return entities.Transaction{
+		Type:         in.Type,
+		Amount:       in.Amount,
+		CurrencyCode: in.CurrencyCode,
+	}
+}
+
+func FromTransactionEntityToDef(in entities.Transaction) definitions.Transaction {
+	return definitions.Transaction{
+		ID:             in.ID,
+		AccountID:      in.AccountID,
+		Type:           in.Type,
+		Amount:         in.Amount,
+		CurrencyCode:   in.CurrencyCode,
+		TransactionFee: in.TransactionFee,
+		Status:         in.Status,
+		CreatedAt:      in.CreatedAt,
+		UpdatedAt:      in.UpdatedAt,
+	}
+}

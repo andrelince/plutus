@@ -81,7 +81,7 @@ func (h Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	out, err := h.userConn.CreateUser(r.Context(), transformer.FromUserInputDefToModel(user))
+	out, err := h.userConn.CreateUser(r.Context(), transformer.FromUserInputDefToEntity(user))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		WriteError(w, err)
@@ -108,10 +108,10 @@ func (h Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 // @Tags         user
 // @Produce      json
 // @Success      200  {object}  definitions.User
-// @Router       /user [put]
+// @Router       /user/{id} [put]
 //
-// @Param        id    query  string                 true  "id of user to update"
-// @Param        user  body   definitions.UserInput  true  "user to update"
+// @Param        id    path  string                 true  "id of user to update"
+// @Param        user  body  definitions.UserInput  true  "user to update"
 func (h Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil || id <= 0 {
@@ -140,7 +140,7 @@ func (h Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	out, err := h.userConn.UpdateUser(r.Context(), uint(id), transformer.FromUserInputDefToModel(user))
+	out, err := h.userConn.UpdateUser(r.Context(), uint(id), transformer.FromUserInputDefToEntity(user))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		WriteError(w, err)
@@ -167,9 +167,9 @@ func (h Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 // @Tags         user
 // @Produce      json
 // @Success      200
-// @Router       /user [delete]
+// @Router       /user/{id} [delete]
 //
-// @Param        id  query  string  true  "id of user to delete"
+// @Param        id  path  string  true  "id of user to delete"
 func (h Handler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil || id <= 0 {
@@ -194,9 +194,9 @@ func (h Handler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 // @Tags         user
 // @Produce      json
 // @Success      200  {object}  definitions.User
-// @Router       /user [get]
+// @Router       /user/{id} [get]
 //
-// @Param        id  query  string  true  "id of user to retrieve"
+// @Param        id  path  string  true  "id of user to retrieve"
 func (h Handler) GetUser(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil || id <= 0 {
@@ -260,12 +260,12 @@ func (h Handler) GetUsers(w http.ResponseWriter, r *http.Request) {
 //
 // @Summary      Create a user account
 // @Description  Create a user account
-// @Tags         user
+// @Tags         account
 // @Produce      json
 // @Success      200  {object}  definitions.Account
 // @Router       /user/{id}/account [post]
 //
-// @Param        id  query  string  true  "id of user for whom to create the account"
+// @Param        id  path  string  true  "id of user for whom to create the account"
 func (h Handler) CreateAccount(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil || id <= 0 {
@@ -296,14 +296,15 @@ func (h Handler) CreateAccount(w http.ResponseWriter, r *http.Request) {
 
 // GetUserAccount godoc
 //
-// @Summary      Retrieve a user
-// @Description  Retrieve a user in the system
-// @Tags         user
+// @Summary      Retrieve a user account
+// @Description  Retrieve a user account in the system
+// @Tags         account
 // @Produce      json
-// @Success      200  {object}  definitions.User
-// @Router       /user [get]
+// @Success      200  {object}  definitions.Account
+// @Router       /user/{user_id}/account/{account_id} [get]
 //
-// @Param        id  query  string  true  "id of user to retrieve"
+// @Param        user_id     path  string  true  "id of user to retrieve"
+// @Param        account_id  path  string  true  "id of account to retrieve"
 func (h Handler) GetUserAccount(w http.ResponseWriter, r *http.Request) {
 	userID, err := strconv.Atoi(r.PathValue("user_id"))
 	if err != nil || userID <= 0 {
@@ -327,6 +328,66 @@ func (h Handler) GetUserAccount(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jsonOut, err := json.Marshal(transformer.FromAccountEntityToDef(out))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if _, err := w.Write(jsonOut); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+}
+
+// CreateTransaction godoc
+//
+// @Summary      Create an account transaction
+// @Description  Create an account transaction in the system
+// @Tags         account
+// @Produce      json
+// @Success      200  {object}  definitions.Transaction
+// @Router       /account/{id}/transaction [post]
+//
+// @Param        user  body  definitions.TransactionInput  true  "transaction to create"
+// @Param        id    path  string                        true  "id of account to create transaction in"
+func (h Handler) CreateTransaction(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil || id <= 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		WriteError(w, errors.New("account id is invalid"))
+		return
+	}
+
+	defer r.Body.Close()
+
+	b, err := io.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		WriteError(w, errors.New("failed to read request body"))
+		return
+	}
+
+	var in definitions.TransactionInput
+	if err = json.Unmarshal(b, &in); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if err := h.validator.Struct(in); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		WriteError(w, err)
+		return
+	}
+
+	out, err := h.accountConn.CreateTransaction(r.Context(), uint(id), transformer.FromTransactionInputDefToModel(in))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		WriteError(w, err)
+		return
+	}
+
+	jsonOut, err := json.Marshal(transformer.FromTransactionEntityToDef(out))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

@@ -16,6 +16,44 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/account/{id}/transaction": {
+            "post": {
+                "description": "Create an account transaction in the system",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account"
+                ],
+                "summary": "Create an account transaction",
+                "parameters": [
+                    {
+                        "description": "transaction to create",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definitions.TransactionInput"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "id of account to create transaction in",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/definitions.Transaction"
+                        }
+                    }
+                }
+            }
+        },
         "/healthz": {
             "get": {
                 "description": "Check service health condition",
@@ -37,6 +75,37 @@ const docTemplate = `{
             }
         },
         "/user": {
+            "post": {
+                "description": "Create a user in the system",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Create a user",
+                "parameters": [
+                    {
+                        "description": "user to create",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definitions.UserInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/definitions.User"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/{id}": {
             "get": {
                 "description": "Retrieve a user in the system",
                 "produces": [
@@ -51,7 +120,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "id of user to retrieve",
                         "name": "id",
-                        "in": "query",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -78,40 +147,11 @@ const docTemplate = `{
                         "type": "string",
                         "description": "id of user to update",
                         "name": "id",
-                        "in": "query",
+                        "in": "path",
                         "required": true
                     },
                     {
                         "description": "user to update",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/definitions.UserInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/definitions.User"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create a user in the system",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
-                "summary": "Create a user",
-                "parameters": [
-                    {
-                        "description": "user to create",
                         "name": "user",
                         "in": "body",
                         "required": true,
@@ -143,7 +183,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "id of user to delete",
                         "name": "id",
-                        "in": "query",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -161,7 +201,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "account"
                 ],
                 "summary": "Create a user account",
                 "parameters": [
@@ -169,7 +209,43 @@ const docTemplate = `{
                         "type": "string",
                         "description": "id of user for whom to create the account",
                         "name": "id",
-                        "in": "query",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/definitions.Account"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/{user_id}/account/{account_id}": {
+            "get": {
+                "description": "Retrieve a user account in the system",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account"
+                ],
+                "summary": "Retrieve a user account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id of user to retrieve",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "id of account to retrieve",
+                        "name": "account_id",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -234,6 +310,63 @@ const docTemplate = `{
                 }
             }
         },
+        "definitions.Transaction": {
+            "type": "object",
+            "properties": {
+                "account_id": {
+                    "type": "integer"
+                },
+                "amount": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "currency_code": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "transaction_fee": {
+                    "type": "number"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "definitions.TransactionInput": {
+            "type": "object",
+            "required": [
+                "amount"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "currency_code": {
+                    "type": "string",
+                    "enum": [
+                        "USD",
+                        "EUR"
+                    ]
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "debit",
+                        "credit"
+                    ]
+                }
+            }
+        },
         "definitions.User": {
             "type": "object",
             "properties": {
@@ -275,7 +408,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "locahost:3000",
+	Host:             "localhost:3000",
 	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "Plutus Banking API",

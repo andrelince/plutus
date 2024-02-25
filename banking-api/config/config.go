@@ -6,9 +6,15 @@ import (
 )
 
 type Config struct {
-	Port             string `env:"SRV_PORT" envDefault:"3000"`
-	LoggerSettings   logger.Settings
-	PostgresSettings pg.PostgresSettings
+	Port                string `env:"SRV_PORT" envDefault:"3000"`
+	LoggerSettings      logger.Settings
+	PostgresSettings    pg.PostgresSettings
+	TransactionSettings TransactionSettings
+}
+
+type TransactionSettings struct {
+	BaseCurrency   string  `env:"BASE_CURRENCY" envDefault:"EUR"`
+	TransactionFee float64 `env:"TRANSACTION_FEE" envDefault:"0.1"`
 }
 
 func NewLoggerSettings(config Config) logger.Settings {
@@ -17,4 +23,8 @@ func NewLoggerSettings(config Config) logger.Settings {
 
 func NewPostgresSettings(config Config) pg.PostgresSettings {
 	return config.PostgresSettings
+}
+
+func NewTransactionSettings(config Config) TransactionSettings {
+	return config.TransactionSettings
 }

@@ -55,6 +55,21 @@ func (mr *MockAccountConnectorMockRecorder) CreateAccount(arg0, arg1 any) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAccount", reflect.TypeOf((*MockAccountConnector)(nil).CreateAccount), arg0, arg1)
 }
 
+// CreateTransaction mocks base method.
+func (m *MockAccountConnector) CreateTransaction(arg0 context.Context, arg1 uint, arg2 model.Transaction) (model.Transaction, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateTransaction", arg0, arg1, arg2)
+	ret0, _ := ret[0].(model.Transaction)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateTransaction indicates an expected call of CreateTransaction.
+func (mr *MockAccountConnectorMockRecorder) CreateTransaction(arg0, arg1, arg2 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTransaction", reflect.TypeOf((*MockAccountConnector)(nil).CreateTransaction), arg0, arg1, arg2)
+}
+
 // GetAccountByUserIDAndID mocks base method.
 func (m *MockAccountConnector) GetAccountByUserIDAndID(arg0 context.Context, arg1, arg2 uint) (model.Account, error) {
 	m.ctrl.T.Helper()

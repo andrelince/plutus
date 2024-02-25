@@ -103,3 +103,54 @@ func Test_GetAccountByUserIDAndID(t *testing.T) {
 		})
 	}
 }
+
+func Test_CreateTransaction(t *testing.T) {
+
+	testCases := map[string]struct {
+		ctx        context.Context
+		accountID  uint
+		serviceIn  entities.Transaction
+		serviceOut entities.Transaction
+		serviceErr error
+		repoIn     model.Transaction
+		repoOut    model.Transaction
+		repoErr    error
+	}{
+		"success": {
+			ctx:        context.Background(),
+			accountID:  1,
+			serviceIn:  entities.Transaction{Type: "debit"},
+			serviceOut: entities.Transaction{ID: 1, AccountID: 1},
+			repoIn:     model.Transaction{Type: "debit"},
+			repoOut:    model.Transaction{ID: 1, AccountID: 1},
+		},
+		"error": {
+			ctx:        context.Background(),
+			accountID:  1,
+			serviceIn:  entities.Transaction{Type: "debit"},
+			serviceErr: errors.New("error"),
+			repoIn:     model.Transaction{Type: "debit"},
+			repoErr:    errors.New("error"),
+		},
+	}
+
+	for name, args := range testCases {
+		t.Run(name, func(t *testing.T) {
+			assert := assert.New(t)
+			ctrl := gomock.NewController(t)
+			mctr := mocks.NewMockAccountConnector(ctrl)
+			defer ctrl.Finish()
+
+			mctr.
+				EXPECT().
+				CreateTransaction(args.ctx, args.accountID, args.repoIn).
+				Return(args.repoOut, args.repoErr)
+
+			svc := NewAccountService(mctr)
+
+			out, err := svc.CreateTransaction(args.ctx, args.accountID, args.serviceIn)
+			assert.Equal(args.serviceOut, out)
+			assert.Equal(args.serviceErr, err)
+		})
+	}
+}

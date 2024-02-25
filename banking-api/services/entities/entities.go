@@ -20,3 +20,17 @@ type Account struct {
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }
+
+type Transaction struct {
+	ID              uint
+	Type            string
+	Amount          float64
+	CurrencyCode    string
+	AccountID       uint
+	ConvertedAmount float64
+	ConversionRate  float64
+	TransactionFee  float64
+	Status          string
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
+}

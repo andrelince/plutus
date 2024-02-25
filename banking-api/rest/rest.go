@@ -12,7 +12,7 @@ import (
 // @title        Plutus Banking API
 // @version      1.0
 // @description  This is a API representing a simple banking system.
-// @host         locahost:3000
+// @host         localhost:3000
 func NewRest(router *http.ServeMux, r Handler, log logger.Logger) error {
 
 	// users
@@ -25,6 +25,9 @@ func NewRest(router *http.ServeMux, r Handler, log logger.Logger) error {
 	// accounts
 	router.HandleFunc("POST /user/{id}/account", r.CreateAccount)
 	router.HandleFunc("GET /user/{user_id}/account/{account_id}", r.GetUserAccount)
+
+	// transactions
+	router.HandleFunc("POST /account/{id}/transaction", r.CreateTransaction)
 
 	router.HandleFunc("GET /healthz", r.Health)
 	router.Handle("GET /swagger/*", httpSwagger.Handler())

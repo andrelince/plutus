@@ -29,6 +29,10 @@ func buildConfig(c *dig.Container) error {
 		return err
 	}
 
+	if err := c.Provide(config.NewTransactionSettings); err != nil {
+		return err
+	}
+
 	if err := c.Provide(func(s logger.Settings) (logger.Logger, error) {
 		return logger.New(s), nil
 	}); err != nil {
@@ -61,8 +65,11 @@ func buildConfig(c *dig.Container) error {
 		return err
 	}
 
-	if err := c.Provide(func(g *gorm.DB) repositories.AccountConnector {
-		return repositories.NewAccountRepo(g)
+	if err := c.Provide(func(g *gorm.DB, s config.TransactionSettings) repositories.AccountConnector {
+		return repositories.NewAccountRepo(g, repositories.TransactionSettings{
+			BaseCurrency:   s.BaseCurrency,
+			TransactionFee: s.TransactionFee,
+		})
 	}); err != nil {
 		return err
 	}

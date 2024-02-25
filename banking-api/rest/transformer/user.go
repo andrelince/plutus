@@ -15,7 +15,7 @@ func FromUserEntityToDef(in entities.User) definitions.User {
 	}
 }
 
-func FromUserInputDefToModel(in definitions.UserInput) entities.User {
+func FromUserInputDefToEntity(in definitions.UserInput) entities.User {
 	return entities.User{
 		Name:  in.Name,
 		Email: in.Email,
