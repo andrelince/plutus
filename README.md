@@ -12,7 +12,7 @@ The Plutus banking api supports the following operations
 
 - The API was designed considering the perspective of the bank.
 - Transactions are not updateable / removable. If a transaction was a *"mistake"* it should be corrected by a following transaction.
-- Deletion is in most cases soft-delete as it is important to keep historical record.
+- Deletion is in most cases soft-delete as it is important to keep historical record. Once a record is deleted it is not changeable but can still be read.
 
 ### Pre-requisites
 
