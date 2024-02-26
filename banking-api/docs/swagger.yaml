@@ -248,6 +248,27 @@ paths:
       tags:
       - account
   /user/{user_id}/account/{account_id}:
+    delete:
+      description: Delete a user account from the system
+      parameters:
+      - description: id of user
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: id of account to delete
+        in: path
+        name: account_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+      summary: Delete a user account
+      tags:
+      - user
     get:
       description: Retrieve a user account in the system
       parameters:

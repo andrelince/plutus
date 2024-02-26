@@ -6,7 +6,7 @@ import (
 )
 
 func FromAccountModelToEntity(in model.Account) entities.Account {
-	return entities.Account{
+	out := entities.Account{
 		ID:            in.ID,
 		UserID:        in.UserID,
 		AccountNumber: in.AccountNumber,
@@ -14,6 +14,12 @@ func FromAccountModelToEntity(in model.Account) entities.Account {
 		CreatedAt:     in.CreatedAt,
 		UpdatedAt:     in.UpdatedAt,
 	}
+
+	if in.DeletedAt.Valid {
+		out.DeletedAt = &in.DeletedAt.Time
+	}
+
+	return out
 }
 
 func FromAccountEntityToModel(in entities.Account) model.Account {

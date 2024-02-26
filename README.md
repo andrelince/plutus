@@ -5,7 +5,7 @@ The Plutus banking api supports the following operations
 | Resource  | Operations |
 | ------------- | ------------- |
 | User          | CRUD          |
-| Account       | CR            |
+| Account       | CRD           |
 | Transaction   | CR            |
 
 ##### Design choices

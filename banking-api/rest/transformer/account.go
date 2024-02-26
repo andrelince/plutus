@@ -13,6 +13,7 @@ func FromAccountEntityToDef(in entities.Account) definitions.Account {
 		Balance:       in.Balance,
 		CreatedAt:     in.CreatedAt,
 		UpdatedAt:     in.UpdatedAt,
+		DeletedAt:     in.DeletedAt,
 	}
 }
 

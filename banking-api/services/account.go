@@ -14,6 +14,7 @@ type AccountConnector interface {
 	GetAccountByUserIDAndID(ctx context.Context, userID, accountID uint) (entities.Account, error)
 	CreateTransaction(ctx context.Context, accountID uint, transaction entities.Transaction) (entities.Transaction, error)
 	GetAccountTransactions(ctx context.Context, accountID uint) ([]entities.Transaction, error)
+	DeleteAccount(ctx context.Context, userID, accountID uint) error
 }
 
 type AccountService struct {
@@ -56,4 +57,8 @@ func (r AccountService) GetAccountTransactions(ctx context.Context, accountID ui
 		return []entities.Transaction{}, err
 	}
 	return slice.FromManyToMany(t, transformer.FromTransactionModelToEntity), nil
+}
+
+func (r AccountService) DeleteAccount(ctx context.Context, userID, accountID uint) error {
+	return r.accountRepo.DeleteAccount(ctx, userID, accountID)
 }

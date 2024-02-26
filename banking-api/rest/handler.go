@@ -35,12 +35,12 @@ func NewHandler(
 
 // Healthz godoc
 //
-//  @Summary      Check service health
-//  @Description  Check service health condition
-//  @Tags         health
-//  @Produce      plain
-//  @Success      200  {string}  string  "OK"
-//  @Router       /healthz [get]
+//	@Summary      Check service health
+//	@Description  Check service health condition
+//	@Tags         health
+//	@Produce      plain
+//	@Success      200  {string}  string  "OK"
+//	@Router       /healthz [get]
 func (h Handler) Health(writer http.ResponseWriter, request *http.Request) {
 	if _, err := writer.Write([]byte(`OK`)); err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
@@ -436,5 +436,40 @@ func (h Handler) GetTransactions(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+}
+
+// DeleteAccount godoc
+//
+// @Summary      Delete a user account
+// @Description  Delete a user account from the system
+// @Tags         account
+// @Produce      json
+// @Success      200
+// @Router       /user/{user_id}/account/{account_id} [delete]
+//
+// @Param        user_id     path  string  true  "id of user"
+// @Param        account_id  path  string  true  "id of account to delete"
+func (h Handler) DeleteAccount(w http.ResponseWriter, r *http.Request) {
+	userID, err := strconv.Atoi(r.PathValue("user_id"))
+	if err != nil || userID <= 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		WriteError(w, errors.New("user id is invalid"))
+		return
+	}
+
+	accountID, err := strconv.Atoi(r.PathValue("account_id"))
+	if err != nil || accountID <= 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		WriteError(w, errors.New("account id is invalid"))
+		return
+	}
+
+	if err = h.accountConn.DeleteAccount(r.Context(), uint(userID), uint(accountID)); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		WriteError(w, err)
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
 }

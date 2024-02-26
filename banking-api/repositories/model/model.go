@@ -23,7 +23,8 @@ type Account struct {
 	Balance       float64 `gorm:"type:decimal(10,2)"`
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
-	Transactions  []Transaction `gorm:"foreignKey:AccountID"`
+	DeletedAt     gorm.DeletedAt `gorm:"index"`
+	Transactions  []Transaction  `gorm:"foreignKey:AccountID"`
 }
 
 type Transaction struct {

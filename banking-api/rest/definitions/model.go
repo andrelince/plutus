@@ -18,12 +18,13 @@ type UserInput struct {
 }
 
 type Account struct {
-	ID            uint      `json:"id"`
-	UserID        uint      `json:"user_id"`
-	AccountNumber string    `json:"account_number"`
-	Balance       float64   `json:"balance"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
+	ID            uint       `json:"id"`
+	UserID        uint       `json:"user_id"`
+	AccountNumber string     `json:"account_number"`
+	Balance       float64    `json:"balance"`
+	CreatedAt     time.Time  `json:"created_at"`
+	UpdatedAt     time.Time  `json:"updated_at"`
+	DeletedAt     *time.Time `json:"deleted_at"`
 }
 
 type Transaction struct {

@@ -16,6 +16,7 @@ type AccountConnector interface {
 	GetAccountByUserIDAndID(ctx context.Context, userID, accountID uint) (model.Account, error)
 	CreateTransaction(ctx context.Context, accountID uint, transaction model.Transaction) (model.Transaction, error)
 	GetAccountTransactions(ctx context.Context, accountID uint) ([]model.Transaction, error)
+	DeleteAccount(ctx context.Context, userID, accountID uint) error
 }
 
 type TransactionSettings struct {
@@ -58,6 +59,7 @@ func (r AccountRepo) GetAccountByUserIDAndID(ctx context.Context, userID, accoun
 	found := model.Account{ID: accountID, UserID: userID}
 	foundRes := r.g.
 		WithContext(ctx).
+		Unscoped().
 		First(&found)
 	return found, foundRes.Error
 }
@@ -143,9 +145,26 @@ func (r AccountRepo) getConversionRate(fromCurrencyCode, toCurrencyCode string, 
 func (r AccountRepo) GetAccountTransactions(ctx context.Context, accountID uint) ([]model.Transaction, error) {
 	var transactions []model.Transaction
 	err := r.g.
-		Model(model.Transaction{AccountID: accountID}).
+		Where("account_id = ?", accountID).
 		Order("created_at desc").
 		Find(&transactions).
 		Error
 	return transactions, err
+}
+
+func (r AccountRepo) DeleteAccount(ctx context.Context, userID, accountID uint) error {
+	account := model.Account{ID: accountID, UserID: userID}
+	err := r.g.
+		WithContext(ctx).
+		First(&account).
+		Error
+
+	if err != nil {
+		return err
+	}
+
+	res := r.g.
+		WithContext(ctx).
+		Delete(&model.Account{}, accountID)
+	return res.Error
 }

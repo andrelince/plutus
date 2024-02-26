@@ -23,6 +23,7 @@ func NewRest(router *http.ServeMux, r Handler) error {
 	// accounts
 	router.HandleFunc("POST /user/{id}/account", r.CreateAccount)
 	router.HandleFunc("GET /user/{user_id}/account/{account_id}", r.GetUserAccount)
+	router.HandleFunc("DELETE /user/{user_id}/account/{account_id}", r.DeleteAccount)
 
 	// transactions
 	router.HandleFunc("POST /account/{id}/transaction", r.CreateTransaction)

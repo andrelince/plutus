@@ -199,3 +199,46 @@ func Test_GetTransactions(t *testing.T) {
 		})
 	}
 }
+
+func Test_DeleteAccount(t *testing.T) {
+
+	testCases := map[string]struct {
+		ctx        context.Context
+		userID     uint
+		accountID  uint
+		serviceErr error
+		repoErr    error
+	}{
+		"success": {
+			ctx:       context.Background(),
+			userID:    1,
+			accountID: 2,
+		},
+		"error": {
+			ctx:        context.Background(),
+			userID:     1,
+			accountID:  2,
+			serviceErr: errors.New("error"),
+			repoErr:    errors.New("error"),
+		},
+	}
+
+	for name, args := range testCases {
+		t.Run(name, func(t *testing.T) {
+			assert := assert.New(t)
+			ctrl := gomock.NewController(t)
+			mctr := mocks.NewMockAccountConnector(ctrl)
+			defer ctrl.Finish()
+
+			mctr.
+				EXPECT().
+				DeleteAccount(args.ctx, args.userID, args.accountID).
+				Return(args.repoErr)
+
+			svc := NewAccountService(mctr)
+
+			err := svc.DeleteAccount(args.ctx, args.userID, args.accountID)
+			assert.Equal(args.serviceErr, err)
+		})
+	}
+}
