@@ -26,7 +26,7 @@ func Test_CreateUser(t *testing.T) {
 		"success": {
 			ctx:        context.Background(),
 			serviceIn:  entities.User{Name: "a", Email: "a@a.com"},
-			serviceOut: entities.User{ID: 1, Name: "a", Email: "a@a.com"},
+			serviceOut: entities.User{ID: 1, Name: "a", Email: "a@a.com", Accounts: []entities.Account{}},
 			repoIn:     model.User{Name: "a", Email: "a@a.com"},
 			repoOut:    model.User{ID: 1, Name: "a", Email: "a@a.com"},
 		},
@@ -76,7 +76,7 @@ func Test_UpdateUser(t *testing.T) {
 			ctx:        context.Background(),
 			id:         1,
 			serviceIn:  entities.User{Name: "a", Email: "a@a.com"},
-			serviceOut: entities.User{ID: 1, Name: "a", Email: "a@a.com"},
+			serviceOut: entities.User{ID: 1, Name: "a", Email: "a@a.com", Accounts: []entities.Account{}},
 			repoIn:     model.User{Name: "a", Email: "a@a.com"},
 			repoOut:    model.User{ID: 1, Name: "a", Email: "a@a.com"},
 		},
@@ -161,7 +161,7 @@ func Test_GetUserByID(t *testing.T) {
 		"success": {
 			ctx:        context.Background(),
 			id:         1,
-			serviceOut: entities.User{ID: 1, Name: "a", Email: "a@a.com"},
+			serviceOut: entities.User{ID: 1, Name: "a", Email: "a@a.com", Accounts: []entities.Account{}},
 			repoOut:    model.User{ID: 1, Name: "a", Email: "a@a.com"},
 		},
 		"error": {
@@ -203,7 +203,7 @@ func Test_GetUsers(t *testing.T) {
 	}{
 		"success": {
 			ctx:        context.Background(),
-			serviceOut: []entities.User{{ID: 1, Name: "a", Email: "a@a.com"}},
+			serviceOut: []entities.User{{ID: 1, Name: "a", Email: "a@a.com", Accounts: []entities.Account{}}},
 			repoOut:    []model.User{{ID: 1, Name: "a", Email: "a@a.com"}},
 		},
 		"error": {
